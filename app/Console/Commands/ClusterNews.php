@@ -17,15 +17,15 @@ class ClusterNews extends Command
     {
         $this->info("Kümeleme taraması başlatılıyor...");
 
-        // Analiz edilmemiş haberleri al (CLUSTER_LIMIT kadar - API quota için)
+        // Kümelenmemiş haberleri al (CLUSTER_LIMIT kadar - API quota için)
         $clusterLimit = (int) env('CLUSTER_LIMIT', 50);
-        $articles = Article::where('is_analyzed', false)
+        $articles = Article::whereNull('news_cluster_id')
             ->orderBy('id', 'desc')
             ->take($clusterLimit)
             ->get();
 
         if ($articles->isEmpty()) {
-            $this->info("Gruplanacak yeni haber yok.");
+            $this->info("Kümelenmemiş haber bulunamadı.");
             return;
         }
 
