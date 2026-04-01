@@ -70,9 +70,10 @@
             <aside class="hidden lg:block w-72 flex-shrink-0">
                 <h2 class="text-2xl font-bold text-white mb-4">Günün Özeti</h2>
 
-                @if($newsClusters->take(3)->isNotEmpty())
+                @if($sidebarBriefing->isNotEmpty())
                     <div class="space-y-4">
-                        @foreach($newsClusters->take(3) as $briefing)
+                        {{-- Sol sidebar üst: İlk 3 haber --}}
+                        @foreach($sidebarBriefing as $briefing)
                             @php
                                 $bias = is_array($briefing->bias_data) ? $briefing->bias_data : json_decode($briefing->bias_data, true);
                             @endphp
@@ -88,11 +89,10 @@
                                         <div class="h-32 bg-gradient-to-br from-gray-700 to-gray-900"></div>
                                     @endif
                                     <div class="p-4">
-                                        <div class="text-xs text-gray-500 mb-1">{{ $briefing->source_count }} haber •
+                                        <div class="text-xs text-gray-500 mb-1">{{ $briefing->source_count }} haber &bull;
                                             {{ $briefing->articles->count() }} kaynak
                                         </div>
-                                        <h3 class="font-bold text-white text-sm mb-3 line-clamp-3">{{ $briefing->title }}
-                                        </h3>
+                                        <h3 class="font-bold text-white text-sm mb-3 line-clamp-3">{{ $briefing->title }}</h3>
                                         <p class="text-xs text-gray-400 mb-3 line-clamp-2">
                                             {{ Str::limit($briefing->summary, 100) }}
                                         </p>
@@ -103,31 +103,31 @@
                     </div>
 
                     <h3 class="text-xl font-bold text-white mt-8 mb-4">Öne Çıkan Haberler</h3>
-                    @if($newsClusters->skip(3)->take(3)->isNotEmpty())
+                    {{-- Sol sidebar alt: 4-6. haberler --}}
+                    @if($sidebarFeatured->isNotEmpty())
                         <div class="space-y-4">
-                            @foreach($newsClusters->skip(3)->take(3) as $featured)
+                            @foreach($sidebarFeatured as $featuredSidebar)
                                 @php
-                                    $bias = is_array($featured->bias_data) ? $featured->bias_data : json_decode($featured->bias_data, true);
+                                    $bias = is_array($featuredSidebar->bias_data) ? $featuredSidebar->bias_data : json_decode($featuredSidebar->bias_data, true);
                                 @endphp
 
-                                <a href="{{ route('news.show', $featured->id) }}" class="block">
+                                <a href="{{ route('news.show', $featuredSidebar->id) }}" class="block">
                                     <div class="bg-dark-card rounded-lg overflow-hidden hover:bg-dark-hover transition">
-                                        @if($featured->image_url)
+                                        @if($featuredSidebar->image_url)
                                             <div class="relative w-full" style="aspect-ratio: 16/9;">
-                                                <img src="{{ $featured->image_url }}" alt="{{ $featured->title }}"
+                                                <img src="{{ $featuredSidebar->image_url }}" alt="{{ $featuredSidebar->title }}"
                                                     class="absolute inset-0 w-full h-full object-cover" loading="lazy">
                                             </div>
                                         @else
                                             <div class="h-32 bg-gradient-to-br from-gray-700 to-gray-900"></div>
                                         @endif
                                         <div class="p-4">
-                                            <div class="text-xs text-gray-500 mb-1">{{ $featured->source_count }} haber •
-                                                {{ $featured->articles->count() }} kaynak
+                                            <div class="text-xs text-gray-500 mb-1">{{ $featuredSidebar->source_count }} haber &bull;
+                                                {{ $featuredSidebar->articles->count() }} kaynak
                                             </div>
-                                            <h3 class="font-bold text-white text-sm mb-3 line-clamp-3">{{ $featured->title }}
-                                            </h3>
+                                            <h3 class="font-bold text-white text-sm mb-3 line-clamp-3">{{ $featuredSidebar->title }}</h3>
                                             <p class="text-xs text-gray-400 mb-3 line-clamp-2">
-                                                {{ Str::limit($featured->summary, 100) }}
+                                                {{ Str::limit($featuredSidebar->summary, 100) }}
                                             </p>
                                         </div>
                                     </div>
@@ -147,24 +147,24 @@
                     </div>
                 @else
                     <!-- Featured Story -->
-                    @if($newsClusters->first())
+                    {{-- Orta alan: 7. haber ($mainFeatured) --}}
+                    @if($mainFeatured)
                         @php
-                            $featured = $newsClusters->first();
-                            $featuredBias = is_array($featured->bias_data) ? $featured->bias_data : json_decode($featured->bias_data, true);
+                            $featuredBias = is_array($mainFeatured->bias_data) ? $mainFeatured->bias_data : json_decode($mainFeatured->bias_data, true);
                         @endphp
 
                         <article
                             class="bg-dark-card rounded-lg overflow-hidden mb-6 hover:bg-dark-hover transition cursor-pointer"
-                            onclick="window.location='{{ route('news.show', $featured->id) }}'">
+                            onclick="window.location='{{ route('news.show', $mainFeatured->id) }}'">
                             <div class="relative w-full" style="aspect-ratio: 16/9;">
-                                @if($featured->image_url)
-                                    <img src="{{ $featured->image_url }}" alt="{{ $featured->title }}"
+                                @if($mainFeatured->image_url)
+                                    <img src="{{ $mainFeatured->image_url }}" alt="{{ $mainFeatured->title }}"
                                         class="absolute inset-0 w-full h-full object-cover" loading="lazy">
                                 @else
                                     <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-700 to-gray-900"></div>
                                 @endif
                                 <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80">
-                                    <h2 class="text-4xl font-bold text-white mb-4">{{ $featured->title }}</h2>
+                                    <h2 class="text-4xl font-bold text-white mb-4">{{ $mainFeatured->title }}</h2>
 
                                     <!-- Bias Bar -->
                                     <div class="flex gap-px h-2 mb-2">
@@ -183,7 +183,7 @@
                                         <span>Sol {{ $featuredBias['left'] ?? 0 }}%</span>
                                         <span>Merkez {{ $featuredBias['center'] ?? 0 }}%</span>
                                         <span>Sağ {{ $featuredBias['right'] ?? 0 }}%</span>
-                                        <span class="ml-auto">{{ $featured->source_count }} kaynak</span>
+                                        <span class="ml-auto">{{ $mainFeatured->source_count }} kaynak</span>
                                     </div>
                                 </div>
                             </div>
@@ -191,8 +191,9 @@
                     @endif
 
                     <!-- News Grid -->
+                    {{-- Orta alan grid: 8.+ haberler ($mainGrid) --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach($newsClusters->skip(1)->take(20) as $story)
+                        @foreach($mainGrid as $story)
                             @php
                                 $bias = is_array($story->bias_data) ? $story->bias_data : json_decode($story->bias_data, true);
                             @endphp
@@ -252,7 +253,8 @@
                 </p>
 
                 <div class="space-y-4">
-                    @foreach($newsClusters->take(6) as $blindspot)
+                    {{-- Sağ sidebar: bias > %50 olan haberler ($blindspots) --}}
+                    @foreach($blindspots as $blindspot)
                         @php
                             $bias = is_array($blindspot->bias_data) ? $blindspot->bias_data : json_decode($blindspot->bias_data, true);
                             $leftBias = $bias['left'] ?? 0;
