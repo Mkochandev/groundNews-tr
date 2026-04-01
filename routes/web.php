@@ -9,6 +9,10 @@ use Gemini\Laravel\Facades\Gemini;
 
 Route::get('/', [NewsController::class, 'index'])->name('home');
 
+// Auth pages
+Route::view('/giris', 'pages.login')->name('login');
+Route::view('/kayit', 'pages.register')->name('register');
+
 // Footer pages
 Route::view('/hakkimizda', 'pages.about')->name('about');
 Route::view('/metodoloji', 'pages.methodology')->name('methodology');

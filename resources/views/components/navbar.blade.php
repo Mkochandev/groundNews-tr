@@ -30,14 +30,14 @@
             <div class="flex items-center gap-4">
                 <input type="search" placeholder="Ara"
                     class="hidden md:block bg-dark-bg border border-gray-700 rounded px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-gray-600">
-                <button
+                <a href="{{ route('register') }}"
                     class="hidden md:block bg-white text-dark-bg px-6 py-2 rounded font-semibold text-sm hover:bg-gray-200">
                     Takip Et
-                </button>
-                <button
+                </a>
+                <a href="{{ route('login') }}"
                     class="text-white border border-gray-700 px-6 py-2 rounded font-semibold text-sm hover:bg-dark-hover">
                     Giriş
-                </button>
+                </a>
             </div>
         </div>
 
@@ -63,9 +63,9 @@
                 class="px-4 py-2 {{ isset($category) && $category == 'dis-politika' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
                 Dış Politika
             </a>
-            <a href="?category=yerel-haberler"
-                class="px-4 py-2 {{ isset($category) && $category == 'yerel-haberler' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
-                Yerel Haberler
+            <a href="{{ route('category.yerel') }}"
+                class="px-4 py-2 {{ isset($category) && $category == 'yerel' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
+                Yerel
             </a>
             <a href="{{ route('category.teknoloji') }}"
                 class="px-4 py-2 {{ isset($category) && $category == 'teknoloji' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
@@ -74,6 +74,18 @@
             <a href="{{ route('category.spor') }}"
                 class="px-4 py-2 {{ isset($category) && $category == 'spor' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
                 Spor
+            </a>
+            <a href="{{ route('category.senin-icin') }}"
+                class="px-4 py-2 {{ isset($category) && $category == 'senin-icin' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
+                Senin İçin
+            </a>
+            <a href="{{ route('category.golge-gundem') }}"
+                class="px-4 py-2 {{ isset($category) && $category == 'golge-gundem' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
+                Gölge Gündem
+            </a>
+            <a href="{{ route('category.blindspot') }}"
+                class="px-4 py-2 {{ isset($category) && $category == 'blindspot' ? 'bg-dark-hover text-white' : 'text-gray-400 hover:bg-dark-hover' }} rounded-full whitespace-nowrap">
+                Körnoktalar
             </a>
         </div>
     </div>
