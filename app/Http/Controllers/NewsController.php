@@ -22,20 +22,32 @@ class NewsController extends Controller
             $query->where('category', $category);
         }
 
-        // Yeterli haber çek: sol(6) + orta featured(1) + orta grid(20) + sağ(6) = max 33
         $newsClusters = $query->orderBy('updated_at', 'desc')->get();
+        $total = $newsClusters->count();
 
-        // Her bölüm için çakışmayan ayrı dilimler
-        $sidebarBriefing  = $newsClusters->slice(0, 3);  // Sol üst: 1-3. haberler
-        $sidebarFeatured  = $newsClusters->slice(3, 3);  // Sol alt: 4-6. haberler
-        $mainFeatured     = $newsClusters->slice(6, 1)->first();  // Orta büyük: 7. haber
-        $mainGrid         = $newsClusters->slice(7, 20); // Orta grid: 8-27. haberler
-        $blindspots       = $newsClusters->filter(function ($cluster) {
+        // Orta alan HER ZAMAN önce gelir — kategori filtresiyle az haber olsa bile boş kalmaz
+        $mainFeatured = $newsClusters->first();           // Orta büyük: her zaman 1. haber
+        $mainGrid     = $newsClusters->slice(1, 20);      // Orta grid: 2.+ haberler
+
+        // Sol sidebar: yeterli haber varsa farklı haberler, yoksa aynı haberler (preview amaçlı)
+        // Gerçek haber sitelerinde de sidebar = manşet listesi olarak çakışabilir
+        if ($total > 6) {
+            // Yeterli haber var — sidebar orta alanla çakışmıyor
+            $sidebarBriefing = $newsClusters->slice($total - 6, 3); // Son 6'dan ilk 3
+            $sidebarFeatured = $newsClusters->slice($total - 3, 3); // Son 3
+        } else {
+            // Az haber var — sidebar, orta alanın başlıklarını gösteriyor (preview)
+            $sidebarBriefing = $newsClusters->take(3);
+            $sidebarFeatured = $newsClusters->slice(3, 3);
+        }
+
+        // Gölge Gündem: tek tarafa %50+ eğilimli haberler
+        $blindspots = $newsClusters->filter(function ($cluster) {
             $bias = is_array($cluster->bias_data)
                 ? $cluster->bias_data
                 : json_decode($cluster->bias_data, true);
             $max = max($bias['left'] ?? 0, $bias['center'] ?? 0, $bias['right'] ?? 0);
-            return $max > 50; // %50'den fazla tek tarafa eğilimli
+            return $max > 50;
         })->take(6);
 
         return view('news.index', compact(
